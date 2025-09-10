@@ -3,15 +3,29 @@ import requests
 import numpy as np
 import tensorflow as tf
 import pandas as pd
+import gdown
+import os
 
 #Tensorflow Model Prediction
 def model_prediction(test_image):
-    model = tf.keras.models.load_model("trained_model.h5")
+    model_path = "trained_model.h5"
+
+    # Download model only if not already present
+    if not os.path.exists(model_path):
+        url = "https://drive.google.com/file/d/1w4jDXdh0FaKbP5MeVC29hS4JEfTxksdf/view?usp=sharing"  # replace with your file ID
+        gdown.download(url, model_path, quiet=False)
+
+    # Load the model
+    model = tf.keras.models.load_model(model_path)
+
+    # Preprocess the input image
     image = tf.keras.preprocessing.image.load_img(test_image, target_size=(64, 64))
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
-    input_arr = np.array([input_arr]) #convert single image to batch
+    input_arr = np.array([input_arr])  # convert single image to batch
+
+    # Run prediction
     predictions = model.predict(input_arr)
-    return np.argmax(predictions) #return index of max element
+    return np.argmax(predictions)  # return index of max element
 
 #function form sheets
 def prices(predicted_item):
