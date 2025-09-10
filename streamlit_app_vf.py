@@ -1,3 +1,21 @@
+import gdown
+import os
+import tensorflow as tf
+
+# Model file path
+model_path = "trained_model.h5"
+
+# Google Drive file ID (replace with your own)
+file_id = "1AbCDeFgHiJKlmnopQRstuVWxyz"
+url = f"https://drive.google.com/uc?id={file_id}"
+
+# Download the model if it doesn't exist
+if not os.path.exists(model_path):
+    gdown.download(url, model_path, quiet=False)
+
+# Load the model once
+model = tf.keras.models.load_model(model_path)
+
 import streamlit as st
 import requests
 import numpy as np
@@ -7,25 +25,16 @@ import gdown
 import os
 
 #Tensorflow Model Prediction
+import numpy as np
+from tensorflow.keras.preprocessing import image
+
 def model_prediction(test_image):
-    model_path = "trained_model.h5"
-
-    # Download model only if not already present
-    if not os.path.exists(model_path):
-        url = "https://drive.google.com/file/d/1w4jDXdh0FaKbP5MeVC29hS4JEfTxksdf/view?usp=sharing"  # replace with your file ID
-        gdown.download(url, model_path, quiet=False)
-
-    # Load the model
-    model = tf.keras.models.load_model(model_path)
-
-    # Preprocess the input image
-    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(64, 64))
-    input_arr = tf.keras.preprocessing.image.img_to_array(image)
+    img = image.load_img(test_image, target_size=(64, 64))
+    input_arr = image.img_to_array(img)
     input_arr = np.array([input_arr])  # convert single image to batch
-
-    # Run prediction
     predictions = model.predict(input_arr)
     return np.argmax(predictions)  # return index of max element
+
 
 #function form sheets
 def prices(predicted_item):
